@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Studio Classroom Interview Project - Front-end Developer</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+  <style>
+    #app {
+      padding-top: 1rem;
+    }
+
+    .red {
+      color: red;
+    }
+
+    .block {
+      color: #000;
+    }
+
+    .table th.click {
+      cursor: pointer;
+    }
+
+    .icon {
+      display: inline-block;
+    }
+
+    .icon.inverse {
+      transform: rotate(180deg)
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="container">
+      <h1 class="h5 text-center">Studio Classroom Front-end Developer Mini Project</h1>
+
+      <hr>
+
+      <div class="text-center">
+        <button type="button" class="btn btn-primary" @click.prevent="getData">Fetch</button>
+        <button type="button" class="btn btn-warning">Parse</button>
+      </div>
+
+      <hr>
+
+      <h2 class="h5 text-black-50">User Info</h2>
+
+      <dl class="row" v-if="item">
+
+        <!-- This is an example -->
+        <dt class="col-sm-3">First Name</dt>
+        <dd class="col-sm-9">{{ detail.name.split(' ')[0] }}</dd>
+        <dt class="col-sm-3">Last Name</dt>
+        <dd class="col-sm-9">{{ detail.name.split(' ')[1] }}</dd>
+        <dt class="col-sm-3">Company</dt>
+        <dd class="col-sm-9">{{ detail.company.name }}</dd>
+        <dt class="col-sm-3">Phone</dt>
+        <dd class="col-sm-9">
+          <span :class="{ 'red' : itemClass }">{{ detail.phone }}</span>
+        </dd>
+
+      </dl>
+
+      <hr>
+
+      <h2 class="h5 text-black-50">User List</h2>
+
+      <table class="table table-sm table-bordered table-hover">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col" class="click"  @click.prevent="link = 'username', isReverse = !isReverse">Username
+              <span class="icon isReverse" v-if="link === 'username'" :class="{'inverse' : isReverse}">
+                <i class=" fas fa-angle-down text-success"></i>
+              </span></th>
+            <th scope="col" class="click"  @click.prevent="link = 'name', isReverse = !isReverse">
+              Name
+              <span class="icon isReverse" v-if="link === 'name'" :class="{'inverse' : isReverse}">
+                <i class=" fas fa-angle-down text-success"></i>
+              </span>
+            </th>
+            <th scope="col">City</th>
+            <th scope="col">Email</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- This is an example -->
+          <tr v-for="(item,i) in sortData" :key="i">
+            <td>{{ item.username }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.address.city }}</td>
+            <td>
+              <a :href="`mailto:${item.email}?subject=主旨&body=內容`">{{ item.email }}</a>
+            </td>
+            <td>
+              <button type="button" class="btn btn-info btn-sm" @click="getUseritem('Detail',item)">Detail</button>
+              <button type="button" class="btn btn-danger btn-sm" @click="getUseritem('Delete',item)">Delete</button>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    var app = new Vue({
+      el:'#app',
+      data() {
+        return {
+          user:[],
+          userNamesort:[],
+          detail:[],
+          item: false,
+          itemClass: false,
+          link: '',
+          isReverse: 'true',
+        }
+      },
+      computed: {
+        sortData() {
+          const vm = this;
+          if(vm.isReverse) {
+            return vm.user.sort(function(a, b) {
+              return b[vm.link] > a[vm.link] ? 1 : a[vm.link] > b[vm.link] ? -1 : 0;
+            });
+          } else {
+            return vm.user.sort(function(a,b) {
+              return a[vm.link] > b[vm.link] ? 1 : b[vm.link] > a[vm.link] ? -1 : 0;
+            });
+          }
+        }
+      },
+      methods: {
+        getData() {
+          const url = 'https://jsonplaceholder.typicode.com/users';
+          axios.get(url).then((response) => {
+            this.user = response.data;
+          })
+        },
+        getUseritem(type, item) {
+          switch(type) {
+            case 'Detail':
+              this.detail = Object.assign({},item);
+              this.item = true;
+              if(this.detail.phone.split('')[0] == 1){
+                this.itemClass = true;
+              } else {
+                this.itemClass = false;
+              };
+              break;
+            case 'Delete':
+              this.detail = Object.assign({},item);
+              const index = this.user.findIndex(item => item.id === this.detail.id);
+              if(index !== -1){
+              this.user.splice(index,1);
+              }
+              this.item = false;
+              this.detail = [];
+          }
+        },
+      },
+    })
+  </script>
+</body>
+</html>

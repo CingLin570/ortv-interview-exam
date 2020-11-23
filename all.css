@@ -1,0 +1,15 @@
+.card {
+  border: 1px solid #000;
+}
+
+.table-bordered td, .table-bordered th {
+  border: 1px solid #000;
+}
+
+.table-bordered td:first-child, .table-bordered th:first-child{
+  border-left: 0px;
+}
+
+.table-bordered td:last-child, .table-bordered th:last-child{
+  border-right: 0px;
+}
